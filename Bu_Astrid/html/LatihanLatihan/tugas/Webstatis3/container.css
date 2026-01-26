@@ -1,0 +1,26 @@
+.flex_container{
+    display: flex;
+    flex: end;
+    flex-direction: row;
+    flex-wrap: wrap;
+    height: 400px;
+    justify-content: center;
+    align-items: stretch;
+    border: 2px solid black;
+    align-content: space-between;
+}
+
+.box{
+    width: 200px;
+    height: 200px;
+    border: 2px solid black;
+    text-align: center;
+    background-color: lightskyblue;
+    border-radius: 12px;
+}
+.box:nth-child(odd){
+    background-color: lightgreen;
+}
+.box.box:nth-child(even){
+    background: lightsalmon;
+}

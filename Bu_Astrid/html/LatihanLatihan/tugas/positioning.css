@@ -1,0 +1,18 @@
+.box{
+    width: 200px;
+    height: 200px;
+    border: 2px groove black ;
+    border-radius: 12px;
+}
+.satu{
+    background-color: lightblue;
+}
+.dua{
+    background-color: lightcoral;
+    position: relative;
+    top: 30px;
+    left: 45px;
+}
+.tiga{
+    background-color: lightgreen;
+}

@@ -1,0 +1,35 @@
+body{
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    text-align: center;
+    padding: 20px;
+}
+h1{
+    color: darkblue;
+    font-size: 20px;
+
+}
+p{
+    font-size: 12px;
+}
+@media screen and (min-width:768px){
+    h1{
+        font-size: 25px;
+        color: darkgreen;
+    }
+    p{
+        font-size: 18px;
+
+    }
+}
+@media screen and (min-width:1024px){
+    body{
+        text-align: left;
+    }
+    h1{
+        font-size: 26px;
+        color: darkred;
+    }
+    p{
+        font-size: 20px;
+    };
+}

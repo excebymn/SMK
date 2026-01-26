@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Combinator Selectors Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fafafa;
+            color: #333;
+        }
+
+        header {
+            background: #333;
+            color: white;
+            padding: 15px 20px;
+        }
+
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            margin-top: 20px;
+        }
+
+        /* Menu navigasi utama */
+        .menu a {
+            text-decoration: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+        .menu a:hover {
+            background: #ff6600;
+        }
+        .nav > ul {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            gap: 15px;
+        }
+
+        /* Daftar link tambahan di bawah menu utama */
+        .top-links {
+            list-style: none;
+            padding: 10px 20px;
+            margin: 0;
+            display: flex;
+            gap: 15px;
+        }
+        .top-links a {
+            text-decoration: none;
+            color: #444;
+        }
+        .top-links a:hover {
+            color: #ff6600;
+        }
+
+        /* Adjacent Sibling Selector */
+        .intro h2 + p {
+            background-color: #f0f8ff;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        /* General Sibling Selector */
+        .details h2 ~ p {
+            margin-left: 20px;
+            color: #666;
+        }
+
+        /* Descendant Selector */
+        .main-content .details .highlight p {
+            border-left: 4px solid #ffa500;
+            padding-left: 10px;
+        }
+
+        /* Styling menu di header */
+        .header .nav .menu li a {
+            padding: 10px;
+            display: inline-block;
+        }
+
+        /* Child Selector */
+        .main-content > .intro > p {
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+
+        /* Kombinasi Child + Descendant Selector */
+        .content-wrapper > .main-content .details > .highlight p {
+            font-weight: bold;
+            background-color: #f9f9f9;
+        }
+
+        /* Adjacent Sibling Selector */
+        .header + .content-wrapper .main-content {
+            border-top: 1px solid #ddd;
+            margin-top: 20px;
+        }
+
+        /* Layout konten */
+        .content-wrapper {
+            padding: 20px;
+        }
+
+        main {
+            background: white;
+            padding: 20px;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <ul class="menu">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Services</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Link tambahan di atas konten -->
+    <ul class="top-links">
+        <li><a href="https://www.google.com" target="_blank">Google</a></li>
+        <li><a href="https://shopee.co.id" target="_blank">Shopee</a></li>
+        <li><a href="https://www.youtube.com" target="_blank">YouTube</a></li>
+        <li><a href="https://www.wikipedia.org" target="_blank">Wikipedia</a></li>
+    </ul>
+
+    <div class="content-wrapper">
+        <main class="main-content">
+            <section class="intro">
+                <h1>Welcome to the Website</h1>
+                <p>This is an introduction section inside the main content.</p>
+                <div class="info-box">
+                    <h2>Info Box Title</h2>
+                    <p>Some more information in an info box.</p>
+                </div>
+            </section>
+
+            <section class="details">
+                <h2>Details Section</h2>
+                <p>This is a details section that contains more specific information.</p>
+                <p>Another paragraph in the details section.</p>
+                <div class="highlight">
+                    <p>Highlighted information in this div.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <p>© 2024 Your Website. All rights reserved.</p>
+    </footer>
+</body>
+</html>

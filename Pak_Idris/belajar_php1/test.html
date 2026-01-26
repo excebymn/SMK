@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>My MP3 Player - Demo</title>
+<style>
+  :root{
+    --bg:#0f2b2a;
+    --panel:#0b2423;
+    --glass: rgba(255,255,255,0.06);
+    --accent:#58b3ad;
+    --muted:#93b7b3;
+    --white: #eef6f5;
+  }
+  *{box-sizing:border-box;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,#0f2b2a 0%, #0b2625 100%);color:var(--white);-webkit-font-smoothing:antialiased}
+  .app{
+    max-width:1100px;margin:28px auto;padding:24px;display:grid;grid-template-columns:420px 1fr;gap:28px;
+  }
+
+  /* Library panel */
+  .panel{
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));
+    border-radius:22px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,0.6);
+    border:1px solid rgba(255,255,255,0.03);
+    position:relative;overflow:hidden;
+  }
+  .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .title{font-weight:600;font-size:18px}
+  .avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(45deg,#7bd0c7,#2c9f99);display:flex;align-items:center;justify-content:center;color:#083;box-shadow:0 2px 8px rgba(0,0,0,0.4)}
+  .section-title{font-size:13px;color:var(--muted);margin:16px 0 8px}
+  .top-hits{display:flex;gap:12px;overflow:auto;padding-bottom:8px}
+  .hit{width:68px;flex:0 0 68px;text-align:center}
+  .hit .circle{width:68px;height:68px;border-radius:50%;background:linear-gradient(180deg,#2f7f7a,#0f4f4b);box-shadow:0 10px 30px rgba(12,40,40,0.6);display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+  .hit p{margin:8px 0 0;font-size:12px;color:var(--muted)}
+
+  /* Library list */
+  .library{
+    margin-top:12px;border-radius:12px;padding:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.04));
+    max-height:420px;overflow:auto;
+  }
+  .song{
+    display:flex;gap:12px;align-items:center;padding:10px;border-radius:10px;margin-bottom:6px;cursor:pointer;
+    transition:background .15s, transform .08s;
+  }
+  .song:hover{background:rgba(255,255,255,0.02);transform:translateY(-2px)}
+  .thumb{width:52px;height:52px;border-radius:10px;background:linear-gradient(180deg,#2c6663,#114d4b);display:flex;align-items:center;justify-content:center;font-weight:700}
+  .meta{flex:1}
+  .meta .name{font-size:14px}
+  .meta .artist{font-size:12px;color:var(--muted)}
+  .three{width:22px;height:22px;opacity:.6}
+
+  /* drag area */
+  .dropzone{border:2px dashed rgba(255,255,255,0.04);border-radius:12px;padding:14px;margin-top:10px;text-align:center;color:var(--muted)}
+  .dropzone.dragover{background:rgba(88,179,173,0.04);border-color:rgba(88,179,173,0.35);color:var(--accent)}
+
+  /* Player Panel (right) */
+  .player-panel{
+    border-radius:22px;padding:30px;background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(0,0,0,0.06));
+    display:flex;flex-direction:column;align-items:center;justify-content:flex-start;min-height:520px;
+  }
+  .now{font-size:12px;color:var(--muted);letter-spacing:1px;margin-bottom:12px}
+  .cover{
+    width:300px;height:300px;border-radius:50%;background:linear-gradient(180deg,#93d5cf,#1b5e5a);display:flex;align-items:center;justify-content:center;box-shadow:0 30px 60px rgba(5,30,30,0.6);
+    position:relative;overflow:hidden;
+  }
+  .cover img{width:100%;height:100%;object-fit:cover}
+  .song-title{margin-top:22px;font-size:20px;font-weight:600}
+  .song-artist{color:var(--muted);margin-top:6px}
+
+  /* progress */
+  .progress-wrap{width:80%;margin-top:26px}
+  .time-row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:8px}
+  .progress{width:100%;height:8px;background:rgba(255,255,255,0.04);border-radius:8px;position:relative;overflow:hidden}
+  .progress .bar{height:100%;background:linear-gradient(90deg,var(--accent),#6dd7c9);width:0%}
+
+  /* controls */
+  .controls{display:flex;align-items:center;gap:28px;margin-top:24px}
+  .btn{background:var(--glass);border:1px solid rgba(255,255,255,0.03);width:72px;height:72px;border-radius:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .12s}
+  .btn:active{transform:scale(.98)}
+  .big{width:96px;height:96px;border-radius:18px}
+
+  /* mini player */
+  .mini{
+    position:fixed;left:28px;right:28px;bottom:28px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));
+    border-radius:18px;padding:12px;display:flex;align-items:center;gap:12px;box-shadow:0 10px 40px rgba(0,0,0,0.6);
+  }
+  .mini .m-thumb{width:56px;height:56px;border-radius:10px;background:#113f3d}
+  .mini .m-meta{flex:1}
+  .mini .m-controls{display:flex;gap:8px;align-items:center}
+
+  /* responsive */
+  @media (max-width:920px){
+    .app{grid-template-columns:1fr;max-width:760px}
+    .mini{left:12px;right:12px}
+  }
+
+  /* small icons */
+  .icon{width:20px;height:20px;display:inline-block;opacity:.9}
+  button.icon-btn{background:none;border:0;color:var(--white);cursor:pointer}
+  input[type=file]{display:none}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- LEFT: LIBRARY -->
+  <div class="panel">
+    <div class="header">
+      <div class="title">Library</div>
+      <div class="avatar">B</div>
+    </div>
+
+    <div class="section-title">Top Hits</div>
+    <div class="top-hits" id="topHits">
+      <div class="hit"><div class="circle">PH</div><p>Top</p></div>
+      <div class="hit"><div class="circle">XD</div><p>Vibe</p></div>
+      <div class="hit"><div class="circle">EM</div><p>Moody</p></div>
+    </div>
+
+    <div class="section-title">Your Tracks</div>
+    <div class="library" id="library">
+      <div style="color:var(--muted);font-size:13px">Belum ada lagu. Tambah MP3 lewat tombol atau tarik file ke sini.</div>
+    </div>
+
+    <label style="display:flex;gap:10px;margin-top:12px;align-items:center">
+      <button id="addBtn" class="btn" style="width:44px;height:44px;border-radius:10px;padding:6px">+</button>
+      <input id="fileInput" type="file" accept="audio/*" multiple />
+      <div style="color:var(--muted);font-size:13px">Tambah Lagu</div>
+    </label>
+
+    <div class="dropzone" id="dropzone">Drag & drop file MP3 di sini</div>
+  </div>
+
+  <!-- RIGHT: PLAYER -->
+  <div class="player-panel">
+    <div class="now">NOW PLAYING</div>
+    <div class="cover" id="cover">
+      <!-- placeholder; image will be injected -->
+      <div style="font-size:72px;color:rgba(255,255,255,0.12)">♪</div>
+    </div>
+    <div class="song-title" id="nowTitle">Belum ada lagu</div>
+    <div class="song-artist" id="nowArtist">—</div>
+
+    <div class="progress-wrap">
+      <div class="time-row"><div id="curTime">0:00</div><div id="durTime">0:00</div></div>
+      <div class="progress" id="progress"><div class="bar" id="bar"></div></div>
+    </div>
+
+    <div class="controls">
+      <div class="btn" id="prevBtn" title="Previous">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19V5M6 19l6-7-6-7"/></svg>
+      </div>
+
+      <div class="btn big" id="playBtn" title="Play / Pause">
+        <svg id="playIcon" class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3v18l15-9z"/></svg>
+      </div>
+
+      <div class="btn" id="nextBtn" title="Next">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5v14M6 5l7 7-7 7"/></svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- mini player -->
+<div class="mini" id="mini" style="display:none">
+  <div class="m-thumb" id="miniThumb"></div>
+  <div class="m-meta">
+    <div id="miniTitle" style="font-weight:600">—</div>
+    <div id="miniArtist" style="font-size:13px;color:var(--muted)">—</div>
+  </div>
+  <div class="m-controls">
+    <button id="miniPlay" class="icon-btn" title="Play"><svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3v18l15-9z"/></svg></button>
+  </div>
+</div>
+
+<!-- Hidden audio element -->
+<audio id="audio" preload="metadata"></audio>
+
+<script>
+  // State
+  const libraryEl = document.getElementById('library');
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
+  const addBtn = document.getElementById('addBtn');
+
+  const audio = document.getElementById('audio');
+  const playBtn = document.getElementById('playBtn');
+  const playIcon = document.getElementById('playIcon');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const bar = document.getElementById('bar');
+  const progress = document.getElementById('progress');
+  const curTime = document.getElementById('curTime');
+  const durTime = document.getElementById('durTime');
+
+  const nowTitle = document.getElementById('nowTitle');
+  const nowArtist = document.getElementById('nowArtist');
+  const cover = document.getElementById('cover');
+
+  const mini = document.getElementById('mini');
+  const miniTitle = document.getElementById('miniTitle');
+  const miniArtist = document.getElementById('miniArtist');
+  const miniThumb = document.getElementById('miniThumb');
+  const miniPlay = document.getElementById('miniPlay');
+
+  let tracks = []; // {name, artist, url, cover?}
+  let current = -1;
+  let isPlaying = false;
+  let oscillatorContext = null;
+
+  // Utility time format
+  function fmtTime(s){
+    if(!isFinite(s)) return '0:00';
+    s = Math.floor(s);
+    return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+  }
+
+  // Render library
+  function renderLibrary(){
+    libraryEl.innerHTML = '';
+    if(tracks.length === 0){
+      libraryEl.innerHTML = '<div style="color:var(--muted);font-size:13px">Belum ada lagu. Tambah MP3 lewat tombol atau tarik file ke sini.</div>';
+      mini.style.display = 'none';
+      return;
+    }
+    tracks.forEach((t, i) => {
+      const el = document.createElement('div');
+      el.className = 'song';
+      el.innerHTML = `
+        <div class="thumb">${t.thumbChar || '♫'}</div>
+        <div class="meta">
+          <div class="name">${t.name}</div>
+          <div class="artist">${t.artist || 'Unknown'}</div>
+        </div>
+        <div style="width:22px;text-align:center;color:var(--muted)">⋯</div>
+      `;
+      el.addEventListener('click', ()=>playIndex(i));
+      libraryEl.appendChild(el);
+    });
+    mini.style.display = 'flex';
+  }
+
+  // Accept files
+  function handleFiles(files){
+    const arr = Array.from(files).filter(f=>f.type.startsWith('audio/'));
+    arr.forEach(file=>{
+      const url = URL.createObjectURL(file);
+      const name = file.name.replace(/\.[^/.]+$/,'');
+      tracks.push({name, artist:'You', url, file});
+    });
+    renderLibrary();
+    if(current === -1 && tracks.length>0) playIndex(0);
+  }
+
+  // Drag & drop UI
+  ['dragenter','dragover'].forEach(evt=>{
+    dropzone.addEventListener(evt, e=>{
+      e.preventDefault();dropzone.classList.add('dragover');
+    });
+  });
+  ['dragleave','drop'].forEach(evt=>{
+    dropzone.addEventListener(evt, e=>{
+      e.preventDefault();dropzone.classList.remove('dragover');
+    });
+  });
+  dropzone.addEventListener('drop', e=>{
+    if(e.dataTransfer && e.dataTransfer.files) handleFiles(e.dataTransfer.files);
+  });
+
+  addBtn.addEventListener('click', ()=>fileInput.click());
+  fileInput.addEventListener('change', ()=>handleFiles(fileInput.files));
+
+  // Play a track by index
+  function playIndex(i){
+    if(i<0 || i>=tracks.length) return;
+    current = i;
+    const track = tracks[i];
+    audio.src = track.url;
+    nowTitle.textContent = track.name;
+    nowArtist.textContent = track.artist || 'Unknown';
+    miniTitle.textContent = track.name;
+    miniArtist.textContent = track.artist || 'Unknown';
+    // simple thumb char
+    miniThumb.style.background = 'linear-gradient(180deg,#2c6663,#114d4b)';
+    miniThumb.textContent = (track.name[0]||'♪').toUpperCase();
+    // big cover: show first char if no cover
+    cover.innerHTML = `<div style="font-size:120px;color:rgba(255,255,255,0.08)">${(track.name[0]||'♪').toUpperCase()}</div>`;
+    audio.play().then(()=>{ setPlaying(true); }).catch(e=>{
+      // autoplay blocked -> just set paused
+      setPlaying(false);
+    });
+  }
+
+  function setPlaying(v){
+    isPlaying = v;
+    // swap icon
+    if(isPlaying){
+      playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'; // pause
+      miniPlay.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+    } else {
+      playIcon.innerHTML = '<path d="M5 3v18l15-9z"/>'; // play
+      miniPlay.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3v18l15-9z"/></svg>';
+    }
+  }
+
+  // Controls
+  playBtn.addEventListener('click', togglePlay);
+  miniPlay.addEventListener('click', togglePlay);
+  prevBtn.addEventListener('click', ()=>{ if(tracks.length) playIndex((current-1+tracks.length)%tracks.length); });
+  nextBtn.addEventListener('click', ()=>{ if(tracks.length) playIndex((current+1)%tracks.length); });
+
+  function togglePlay(){
+    if(!audio.src){
+      // no audio: generate a short tone demo
+      playDemoTone();
+      return;
+    }
+    if(isPlaying) audio.pause();
+    else audio.play();
+  }
+
+  audio.addEventListener('play', ()=>setPlaying(true));
+  audio.addEventListener('pause', ()=>setPlaying(false));
+  audio.ad

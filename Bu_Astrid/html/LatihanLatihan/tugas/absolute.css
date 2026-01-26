@@ -1,0 +1,28 @@
+.absolute{
+    position: absolute;
+    top: 0;
+    left: 500px;
+}
+h1{
+    background-color: lightblue;
+    padding: 5px;
+    border-radius: 6px;
+    border-color: black;
+    border-style: groove;
+    margin-right: 0;
+}
+p{
+    width: 400px;
+
+}
+nav{
+    background-color: lightblue;
+    font-weight: 700;
+    text-align: right;
+    padding:30px ;
+
+
+    position: fixed;
+    top: 0px;
+    left: 500px;
+}

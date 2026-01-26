@@ -1,0 +1,27 @@
+main {
+  width: 800px; 
+  margin: 0 auto;
+}
+
+#nav-float {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 800px; 
+  background: #333;
+}
+
+#nav-float ul {
+  display: flex;
+  justify-content: space-around;
+  margin: 0;
+  padding: 10px 0;
+  list-style: none;
+}
+
+#nav-float li a {
+  color: white;
+  text-decoration: none;
+}

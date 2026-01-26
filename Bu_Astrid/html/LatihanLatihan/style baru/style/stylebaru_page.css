@@ -1,0 +1,18 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+header{
+    background: rgb(249, 255, 219);
+    height: 200px;
+}
+main{
+    border-radius: 27px;
+    color: white;
+}
+

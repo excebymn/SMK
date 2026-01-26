@@ -1,0 +1,166 @@
+-- MariaDB dump 10.19  Distrib 10.4.32-MariaDB, for Win64 (AMD64)
+--
+-- Host: localhost    Database: present_pkl
+-- ------------------------------------------------------
+-- Server version	10.4.32-MariaDB
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `instansi`
+--
+
+DROP TABLE IF EXISTS `instansi`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `instansi` (
+  `id_instansi` int(11) NOT NULL AUTO_INCREMENT,
+  `nama_instansi` varchar(100) NOT NULL,
+  `alamat` text DEFAULT NULL,
+  `pembimbing_lapangan` varchar(100) DEFAULT NULL,
+  `no_hp` varchar(15) DEFAULT NULL,
+  PRIMARY KEY (`id_instansi`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `instansi`
+--
+
+LOCK TABLES `instansi` WRITE;
+/*!40000 ALTER TABLE `instansi` DISABLE KEYS */;
+INSERT INTO `instansi` VALUES (1,'PT Teknologi Nusantara','Jl. Merdeka No.1','Andi Wijaya','081300000001'),(2,'CV Digital Kreatif','Jl. Sudirman No.10','Budi Santoso','081300000002'),(3,'Studio Web Mojokerto','Jl. Raya Mojokerto','Siti Aminah','081300000003');
+/*!40000 ALTER TABLE `instansi` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `kegiatan_pkl`
+--
+
+DROP TABLE IF EXISTS `kegiatan_pkl`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `kegiatan_pkl` (
+  `id_kegiatan` int(11) NOT NULL AUTO_INCREMENT,
+  `id_pkl` int(11) NOT NULL,
+  `tanggal` date NOT NULL,
+  `kegiatan` text NOT NULL,
+  PRIMARY KEY (`id_kegiatan`),
+  KEY `id_pkl` (`id_pkl`),
+  CONSTRAINT `kegiatan_pkl_ibfk_1` FOREIGN KEY (`id_pkl`) REFERENCES `pkl` (`id_pkl`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `kegiatan_pkl`
+--
+
+LOCK TABLES `kegiatan_pkl` WRITE;
+/*!40000 ALTER TABLE `kegiatan_pkl` DISABLE KEYS */;
+INSERT INTO `kegiatan_pkl` VALUES (1,1,'2026-01-02','Membantu maintenance website perusahaan'),(2,2,'2026-01-02','Belajar desain UI menggunakan Figma'),(3,3,'2026-01-02','Membuat halaman landing page sederhana');
+/*!40000 ALTER TABLE `kegiatan_pkl` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `pembimbing_sekolah`
+--
+
+DROP TABLE IF EXISTS `pembimbing_sekolah`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pembimbing_sekolah` (
+  `id_pembimbing` int(11) NOT NULL AUTO_INCREMENT,
+  `nama` varchar(100) DEFAULT NULL,
+  `no_hp` varchar(15) DEFAULT NULL,
+  PRIMARY KEY (`id_pembimbing`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `pembimbing_sekolah`
+--
+
+LOCK TABLES `pembimbing_sekolah` WRITE;
+/*!40000 ALTER TABLE `pembimbing_sekolah` DISABLE KEYS */;
+INSERT INTO `pembimbing_sekolah` VALUES (1,'Pak Ahmad Fauzi','081355500001'),(2,'Bu Rina Lestari','081355500002'),(3,'Pak Dedi Kurniawan','081355500003');
+/*!40000 ALTER TABLE `pembimbing_sekolah` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `pkl`
+--
+
+DROP TABLE IF EXISTS `pkl`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pkl` (
+  `id_pkl` int(11) NOT NULL AUTO_INCREMENT,
+  `id_siswa` int(11) NOT NULL,
+  `id_instansi` int(11) NOT NULL,
+  `tanggal_mulai` date DEFAULT NULL,
+  `tanggal_selesai` date DEFAULT NULL,
+  PRIMARY KEY (`id_pkl`),
+  KEY `id_siswa` (`id_siswa`),
+  KEY `id_instansi` (`id_instansi`),
+  CONSTRAINT `pkl_ibfk_1` FOREIGN KEY (`id_siswa`) REFERENCES `siswa` (`id_siswa`),
+  CONSTRAINT `pkl_ibfk_2` FOREIGN KEY (`id_instansi`) REFERENCES `instansi` (`id_instansi`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `pkl`
+--
+
+LOCK TABLES `pkl` WRITE;
+/*!40000 ALTER TABLE `pkl` DISABLE KEYS */;
+INSERT INTO `pkl` VALUES (1,1,1,'2026-01-01','2026-03-31'),(2,2,2,'2026-01-01','2026-03-31'),(3,3,3,'2026-01-01','2026-03-31');
+/*!40000 ALTER TABLE `pkl` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `siswa`
+--
+
+DROP TABLE IF EXISTS `siswa`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `siswa` (
+  `id_siswa` int(11) NOT NULL AUTO_INCREMENT,
+  `nama` varchar(100) NOT NULL,
+  `nis` varchar(20) NOT NULL,
+  `kelas` varchar(10) DEFAULT NULL,
+  `jurusan` varchar(50) DEFAULT NULL,
+  `no_hp` varchar(15) DEFAULT NULL,
+  PRIMARY KEY (`id_siswa`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `siswa`
+--
+
+LOCK TABLES `siswa` WRITE;
+/*!40000 ALTER TABLE `siswa` DISABLE KEYS */;
+INSERT INTO `siswa` VALUES (1,'Bima Pratama','12345','XI RPL 1','RPL','081234567890'),(2,'Rizky Ramadhan','12346','XI RPL 2','RPL','081234567891'),(3,'Aulia Putri','12347','XI RPL 1','RPL','081234567892');
+/*!40000 ALTER TABLE `siswa` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2026-01-20 11:39:04

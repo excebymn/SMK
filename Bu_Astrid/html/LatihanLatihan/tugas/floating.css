@@ -1,0 +1,30 @@
+*{
+    /*mengatur ulang peraturan browser*/
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box  ;
+}
+.container{
+    width: 800px;
+    height: 40px;
+    border: 1 px solid red;
+    margin: 0 auto;
+}
+.left-content{
+    text-align: center;
+    line-height: 400px;
+    width: 30%;
+    height:100%;
+    background-color: lightcoral;
+    float: left;
+
+}
+.right-content{
+       text-align: center;
+    line-height: 400px;
+    width: 70%;
+    height:100%;
+    background-color: lightsalmon;
+    float: right;
+
+}

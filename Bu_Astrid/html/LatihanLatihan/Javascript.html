@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style-base.css" />
+    <link rel="stylesheet" href="style-componentbutton.css" />
+  </head>
+<style>
+  .like{
+    width: 25%;
+
+  }
+</style>
+</style>
+  <body>
+    <header>
+      <h1>JavaScript</h1>
+    </header>
+
+    <main>
+      <h2>What Can JavaScript Do?</h2>
+      <p>JavaScript can change HTML attribute values.</p>
+      <p>
+        In this case JavaScript changes the value of the src (source) attribute
+        of an image.
+      </p>
+
+      <img id="bulb" src="pic_bulboff.gif" alt="bulb" data.status="off" />
+      <button id="btn" onclick="change()">press</button>
+
+      <h2 id="text">0</h2>
+      <div class="tombol">
+        <button id="tambah" onclick="tombol('tambah')">tambah</button>
+        <button id="kurang" onclick="tombol('kurang')" style="display: none">kurang</button>
+      </div>
+
+
+
+
+      <section class="v">
+       
+           <h3 style="text-align:center;">Kalkulator</h3>
+            
+   <div class="kalkulator">
+  <input type="text" id="angka1" placeholder="Angka pertama">
+  <input type="text" id="angka2" placeholder="Angka kedua">
+
+  <!-- ini yang penting: tombol langsung di dalam operator-wrap -->
+  <div class="operator-wrap">
+    <button class="like" onclick="hitung('tambah')">+</button>
+    <button class="like" onclick="hitung('kurang')">−</button>
+    <button class="like" onclick="hitung('kali')">×</button>
+    <button class="like" onclick="hitung('bagi')">÷</button>
+  </div>
+
+  <input type="text" id="hasil" placeholder="Hasil" readonly>
+  <button onclick="clearAll()" class="like">Clear</button>
+</div>
+<h2>apakah admin sangat tampan?</h2>
+<button class="tampan" onclick="tampan()">iya</button>
+<button class="tidaktampan" onclick="tidak()">tidak</button>
+<button class="clear" onclick="clearJawaban()">coba lagi</button>
+
+<h2 class="admintampan" style="display: none">terima kasih sudah menjawab yaa,saya memang sangat tampan!!</h2>
+   
+      </section>
+    </main>
+
+    <footer>
+      by #Excebymm (Bima Ghani Firmansyah 11, 0085272229 SMK Negeri Mojoagung)
+    </footer>
+  </body>
+  <script src="source.js"></script>
+</html>

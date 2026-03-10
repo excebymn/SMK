@@ -18,6 +18,9 @@ function getMessage() {
     return null;
 }
 
+//? Setting TimeZone
+date_default_timezone_set('Asia/Jakarta');
+
 //? membuat base url untuk memudahkan pengelolaan link
 // menentukan protocol dengan benar
 $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';

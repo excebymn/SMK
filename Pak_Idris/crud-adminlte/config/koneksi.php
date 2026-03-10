@@ -1,7 +1,7 @@
 <?php
 $host = 'localhost';
 $username = 'root';
-$password = '';
+$password = '1910';
 $db_name = 'db_crud';
 
 $koneksi = mysqli_connect($host, $username, $password, $db_name);

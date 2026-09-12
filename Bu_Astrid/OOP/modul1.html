@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>High Score Game</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 40px 20px;
+        font-family: Arial, sans-serif;
+        background: #f4f4f4;
+        color: #222;
+      }
+
+      .card {
+        max-width: 800px;
+        margin: auto;
+        padding: 25px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      }
+
+      h2 {
+        margin-top: 0;
+      }
+
+      button {
+        padding: 10px 14px;
+        margin: 4px;
+        border: none;
+        border-radius: 6px;
+        background: #222;
+        color: white;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: #444;
+      }
+
+      pre {
+        padding: 15px;
+        background: #f1f1f1;
+        border-radius: 8px;
+        overflow-x: auto;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="card">
+      <h2>Modul 1 : High Score Game (OOP & Local Storage)</h2>
+      <p>gunakan tombol dibawah ini untuk menguji fungsi JS</p>
+
+      <div>
+        <button onclick="addDemoData()">1. Tambah Data Demo</button>
+        <button onclick="showScoreBoard()">2. Tampilkan Score Tinggi</button>
+        <button onclick="deleteAllData()">3. Hapus Semua Data</button>
+      </div>
+
+      <h3>Output / Log:</h3>
+      <pre id="outputConsole">
+Tekan tombol di atas untuk menjalankan logika JS...</pre
+      >
+    </div>
+
+    <script>
+      class Player {
+        #score;
+
+        constructor(name, basescore = 0) {
+          this.name = name;
+          this.#score = basescore;
+        }
+
+        addScore(point) {
+          if (point > 0) {
+            this.#score += point;
+          }
+        }
+
+        getScore() {
+          return this.#score;
+        }
+
+        toJSON() {
+          return {
+            name: this.name,
+            score: this.#score,
+          };
+        }
+      }
+
+      class StorageManager {
+        static KEY_STORAGE = "GAME_HIGHSCORE_DATA";
+
+        static saveScore(playerObj) {
+          const listScore = StorageManager.getAllScores();
+          listScore.push(playerObj.toJSON());
+          listScore.sort((a, b) => b.score - a.score);
+
+          localStorage.setItem(
+            StorageManager.KEY_STORAGE,
+            JSON.stringify(listScore),
+          );
+
+          console.log("data berhasil disimpan ke localstorage");
+        }
+
+        static getAllScores() {
+          const dataString = localStorage.getItem(StorageManager.KEY_STORAGE);
+          return dataString ? JSON.parse(dataString) : [];
+        }
+
+        static getTopScores(limit = 5) {
+          const listScore = StorageManager.getAllScores();
+          return listScore.slice(0, limit);
+        }
+
+        static wipeData() {
+          localStorage.removeItem(StorageManager.KEY_STORAGE);
+        }
+      }
+
+      console.log("=DEMO PROGRAM JAVASCRIPT OOP & LOCAL STORAGE===");
+
+      const p1 = new Player("Bima", 80);
+      p1.addScore(15);
+
+      const p2 = new Player("Ghani", 90);
+      const p3 = new Player("Firman", 100);
+
+      StorageManager.saveScore(p1);
+      StorageManager.saveScore(p2);
+      StorageManager.saveScore(p3);
+
+      console.log("\nPapan Score Tertinggi (top 3)");
+
+      const topScores = StorageManager.getTopScores(3);
+
+      topScores.forEach((item, index) => {
+        console.log(`${index + 1}. ${item.name} - ${item.score}`);
+      });
+
+      class UserSession extends Player {
+        #lastLevel;
+
+        constructor(name, basescore = 0, lastLevel = 1) {
+          super(name, basescore);
+          this.sessionId = Date.now();
+          this.#lastLevel = lastLevel;
+        }
+
+        updateLevel(newLevel) {
+          this.#lastLevel = newLevel;
+        }
+
+        // perbarui toJSON agar level disimpan
+        toJSON() {
+          return {
+            name: this.name,
+            score: this.getScore(),
+            lastLevel: this.#lastLevel,
+          };
+        }
+      }
+
+      // method updateSession pada StorageManager
+      StorageManager.updateSession = function (sessionObj) {
+        const listScore = StorageManager.getAllScores();
+
+        // mencari pemain berdasarkan nama
+        const index = listScore.findIndex(
+          (item) => item.name === sessionObj.name,
+        );
+
+        if (index !== -1) {
+          // update data jika ada pemain
+          listScore[index] = sessionObj.toJSON();
+
+          console.log(
+            `[SUKSES] data ${sessionObj.name} berhasil diperbarui di localstorage`,
+          );
+        }
+
+        // urutkan dari score tertinggi
+        listScore.sort((a, b) => b.score - a.score);
+
+        // simpan lagi di localstorage
+        localStorage.setItem(
+          StorageManager.KEY_STORAGE,
+          JSON.stringify(listScore),
+        );
+      };
+
+      // membuat 3 objek user
+      const user1 = new UserSession("Bima", 95, 2);
+      const user2 = new UserSession("Ghani", 85, 3);
+      const user3 = new UserSession("Firman", 75, 1);
+
+      // menyimpan data ke localStorage
+      StorageManager.saveScore(user1);
+      StorageManager.saveScore(user2);
+      StorageManager.saveScore(user3);
+
+      // update data session
+      user1.addScore(10);
+      user1.updateLevel(4);
+      StorageManager.updateSession(user1);
+
+      // menampilkan seluruh data
+      console.log("\nData userSession di local storage");
+      console.log(StorageManager.getAllScores());
+
+      // menampilkan data top Score
+      console.log("\nHighest Score Board (top 3)");
+
+      const sessionScores = StorageManager.getTopScores(3);
+
+      sessionScores.forEach((item, index) => {
+        console.log(
+          `${index + 1}. ${item.name} - ${item.score} (Level: ${item.lastLevel ?? "-"})`,
+        );
+      });
+
+      // 1. tambah data demo
+      function addDemoData() {
+        const demoPlayer = new Player("Demo Player", 120);
+
+        StorageManager.saveScore(demoPlayer);
+
+        document.getElementById("outputConsole").textContent =
+          "data demo berhasil ditambahkan.\n\n" +
+          JSON.stringify(StorageManager.getAllScores(), null, 2);
+      }
+
+      // 2. tampilkan score tinggi
+      function showScoreBoard() {
+        const topScores = StorageManager.getTopScores(5);
+        let output = "=== HIGH SCORE BOARD ===\n\n";
+
+        if (topScores.length === 0) {
+          output += "belum ada data score.";
+        } else {
+          topScores.forEach((item, index) => {
+            output += `${index + 1}. ${item.name} - ${item.score}`;
+
+            if (item.lastLevel !== undefined) {
+              output += ` (Level: ${item.lastLevel})`;
+            }
+
+            output += "\n";
+          });
+        }
+
+        document.getElementById("outputConsole").textContent = output;
+      }
+
+      // 3. hapus semua data
+      function deleteAllData() {
+        StorageManager.wipeData();
+
+        document.getElementById("outputConsole").textContent =
+          "semua data berhasil dihapus dari localstorage.";
+
+        console.log("semua data berhasil dihapus");
+      }
+    </script>
+  </body>
+</html>
+

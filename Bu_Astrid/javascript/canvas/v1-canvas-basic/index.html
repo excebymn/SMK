@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Coin Collector - 2D Canvas Game</title>
+<style>
+  :root {
+    --bg: #1e1e24;
+    --text: #ffffff;
+    --sky: #5c94fc;
+    --border: #2e75b6;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #2a2a32;
+      --text: #ffffff;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #1e1e24;
+    --text: #ffffff;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    margin: 0;
+    min-height: 100vh;
+    box-sizing: border-box;
+  }
+  h2 { margin-bottom: 6px; text-align: center; }
+  p.instructions { margin-top: 0; margin-bottom: 14px; opacity: 0.8; text-align: center; font-size: 14px; }
+
+  #gameWrap {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  canvas {
+    border: 4px solid var(--border);
+    background-color: var(--sky);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    display: block;
+  }
+</style>
+</head>
+<body>
+
+<div style="width:100%; max-width:600px; margin-bottom:8px;">
+  <a href="../index.html" style="color:#5c94fc; text-decoration:none; font-size:13px;">&larr; Back to project home</a>
+</div>
+<h2>🎮 Coin Collector — 2D Canvas Game</h2>
+<p class="instructions">← → to move, SPACE to jump. Grab as many coins as you can in 30 seconds!</p>
+
+<div id="gameWrap">
+  <canvas id="myCanvas" width="600" height="350"></canvas>
+</div>
+
+<script>
+// ============================================================
+// SETUP
+// ============================================================
+const canvas = document.getElementById("myCanvas");
+const ctx = canvas.getContext("2d");
+
+const GROUND_Y = 300; // posisi lantai dimulai, di bawah garis ini dianggap "tanah"
+const ROUND_SECONDS = 30;
+
+// ------------------------------------------------------------
+// Penyimpanan highscore. Dibungkus try/catch karena ada browser
+// (mode private, setting privacy aneh, dll) yang blokir localStorage
+// sepenuhnya, dan kita gak mau itu bikin game-nya crash.
+// ------------------------------------------------------------
+const HIGHSCORE_KEY = "coinCollectorHighscore";
+
+function loadHighscore() {
+  try {
+    const saved = localStorage.getItem(HIGHSCORE_KEY);
+    return saved ? parseInt(saved, 10) : 0;
+  } catch (e) {
+    return 0; // storage-nya gak bisa diakses, mulai dari nol aja
+  }
+}
+
+function saveHighscore(value) {
+  try {
+    localStorage.setItem(HIGHSCORE_KEY, String(value));
+  } catch (e) {
+    // storage-nya diblokir, ya sudah — game tetap jalan normal,
+    // cuma highscore-nya gak keinget lagi pas dibuka lagi nanti
+  }
+}
+
+let highScore = loadHighscore();
+
+// ============================================================
+// PLAYER
+// ============================================================
+class SpritePlayer {
+  constructor(x, y, width, height, color) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.color = color;
+
+    // state fisika
+    this.vx = 0;          // kecepatan horizontal
+    this.vy = 0;          // kecepatan vertikal (buat gravity/lompat)
+    this.speed = 4;
+    this.jumpPower = -9;
+    this.gravity = 0.4;
+    this.grounded = true;
+  }
+
+  update(keys) {
+    // --- gerak horizontal ---
+    // pendekatan simpel: langsung set velocity berdasarkan tombol
+    // yang lagi dipencet, gak pakai akselerasi/friction biar gampang
+    if (keys.left) this.vx = -this.speed;
+    else if (keys.right) this.vx = this.speed;
+    else this.vx = 0;
+
+    this.x += this.vx;
+
+    // jaga player biar tetap di dalam canvas, gak jalan keluar frame
+    if (this.x < 0) this.x = 0;
+    if (this.x + this.width > canvas.width) this.x = canvas.width - this.width;
+
+    // --- lompat ---
+    if (keys.jump && this.grounded) {
+      this.vy = this.jumpPower;
+      this.grounded = false;
+    }
+
+    // --- gravity ---
+    // tiap frame player ditarik ke bawah sedikit demi sedikit, ini
+    // yang bikin lompatannya kerasa natural (ada lengkungan) bukan
+    // cuma teleport naik-turun tiba-tiba
+    this.vy += this.gravity;
+    this.y += this.vy;
+
+    // --- mendarat di tanah ---
+    // begitu kaki player nyampe garis tanah, berhenti jatuh dan
+    // "tempelin" pas di garis itu (kalau ga gini, player bisa
+    // perlahan-lahan tenggelam ke dalam tanah)
+    const feetY = this.y + this.height;
+    if (feetY >= GROUND_Y) {
+      this.y = GROUND_Y - this.height;
+      this.vy = 0;
+      this.grounded = true;
+    }
+  }
+
+  draw(context) {
+    context.fillStyle = this.color;
+    context.fillRect(this.x, this.y, this.width, this.height);
+
+    context.strokeStyle = "#000000";
+    context.lineWidth = 3;
+    context.strokeRect(this.x, this.y, this.width, this.height);
+
+    // mata kecil biar gak keliatan cuma kotak polos
+    context.fillStyle = "#FFFFFF";
+    context.fillRect(this.x + 25, this.y + 8, 8, 12);
+  }
+
+  // hitbox player sebagai rectangle biasa, dipakai buat ngecek collision
+  getBounds() {
+    return { x: this.x, y: this.y, width: this.width, height: this.height };
+  }
+}
+
+// ============================================================
+// COIN
+// ============================================================
+class Coin {
+  constructor(x, y, radius) {
+    this.x = x;
+    this.y = y;
+    this.radius = radius;
+  }
+
+  draw(context) {
+    context.beginPath();
+    context.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    context.fillStyle = "#FBD000";
+    context.fill();
+    context.lineWidth = 2;
+    context.strokeStyle = "#000000";
+    context.stroke();
+    context.closePath();
+  }
+
+  // coin dianggap kotak (lebar/tinggi sama dengan diameternya) buat
+  // keperluan collision — gak presisi 100% kayak lingkaran asli, tapi
+  // udah cukup adil buat gameplay dan jauh lebih simpel ngeceknya
+  getBounds() {
+    return {
+      x: this.x - this.radius,
+      y: this.y - this.radius,
+      width: this.radius * 2,
+      height: this.radius * 2
+    };
+  }
+
+  respawn() {
+    // pindahin coin ini ke posisi random baru di atas tanah
+    this.x = 60 + Math.random() * (canvas.width - 120);
+    this.y = 150 + Math.random() * 100;
+  }
+}
+
+// dua rectangle yang overlap = collision. ini yang namanya "AABB"
+// (axis-aligned bounding box) check: kalau ada JARAK sedikit pun
+// antara keduanya di sumbu-x ATAU sumbu-y, berarti mereka gak nyentuh.
+function boxesOverlap(a, b) {
+  return (
+    a.x < b.x + b.width &&
+    a.x + a.width > b.x &&
+    a.y < b.y + b.height &&
+    a.y + a.height > b.y
+  );
+}
+
+// ============================================================
+// GAME STATE
+// ============================================================
+let player, coins, score, startTime, state; // state: "playing" | "gameover"
+
+function resetGame() {
+  player = new SpritePlayer(100, GROUND_Y - 60, 40, 60, "#e52521");
+  coins = [
+    new Coin(0, 0, 15),
+    new Coin(0, 0, 15),
+    new Coin(0, 0, 15)
+  ];
+  coins.forEach(c => c.respawn());
+  score = 0;
+  startTime = Date.now();
+  state = "playing";
+}
+
+const keys = { left: false, right: false, jump: false };
+
+window.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowLeft" || e.key === "a") keys.left = true;
+  if (e.key === "ArrowRight" || e.key === "d") keys.right = true;
+  if (e.key === " " || e.key === "ArrowUp") keys.jump = true;
+  if (state === "gameover" && (e.key === "r" || e.key === "R")) {
+    resetGame();
+  }
+});
+
+window.addEventListener("keyup", (e) => {
+  if (e.key === "ArrowLeft" || e.key === "a") keys.left = false;
+  if (e.key === "ArrowRight" || e.key === "d") keys.right = false;
+  if (e.key === " " || e.key === "ArrowUp") keys.jump = false;
+});
+
+// ============================================================
+// FUNGSI GAMBAR
+// ============================================================
+function drawEnvironment() {
+  ctx.fillStyle = "#e52521";
+  ctx.fillRect(0, GROUND_Y, canvas.width, 50);
+  ctx.fillStyle = "#00a800";
+  ctx.fillRect(0, GROUND_Y, canvas.width, 10);
+}
+
+function drawHUD(timeLeft) {
+  ctx.fillStyle = "#FFFFFF";
+  ctx.font = "bold 16px Arial";
+  ctx.fillText(`SCORE: ${score}`, 20, 25);
+  ctx.fillText(`BEST: ${highScore}`, 20, 45);
+  ctx.fillText(`TIME: ${Math.ceil(timeLeft)}`, canvas.width - 100, 25);
+}
+
+function drawGameOver() {
+  ctx.fillStyle = "rgba(0,0,0,0.6)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = "#FFFFFF";
+  ctx.textAlign = "center";
+  ctx.font = "bold 28px Arial";
+  ctx.fillText("TIME'S UP!", canvas.width / 2, canvas.height / 2 - 30);
+
+  ctx.font = "bold 18px Arial";
+  ctx.fillText(`Score: ${score}   Best: ${highScore}`, canvas.width / 2, canvas.height / 2 + 5);
+
+  ctx.font = "16px Arial";
+  ctx.fillText("Press R to play again", canvas.width / 2, canvas.height / 2 + 35);
+
+  ctx.textAlign = "left"; // di-reset biar teks lain gak ikut kena efek ini
+}
+
+// ============================================================
+// MAIN LOOP
+// ============================================================
+function gameLoop() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawEnvironment();
+
+  if (state === "playing") {
+    const elapsed = (Date.now() - startTime) / 1000;
+    const timeLeft = ROUND_SECONDS - elapsed;
+
+    if (timeLeft <= 0) {
+      // round-nya habis — simpan highscore baru kalau run ini ngelewatin
+      if (score > highScore) {
+        highScore = score;
+        saveHighscore(highScore);
+      }
+      state = "gameover";
+    } else {
+      player.update(keys);
+
+      // cek tiap coin terhadap player setiap frame — karena cuma
+      // ada 3 coin di layar, ini masih murah, gak perlu dioptimasi lagi
+      coins.forEach((coin) => {
+        if (boxesOverlap(player.getBounds(), coin.getBounds())) {
+          score += 10;
+          coin.respawn(); // langsung muncul lagi di tempat lain
+        }
+      });
+
+      player.draw(ctx);
+      coins.forEach(c => c.draw(ctx));
+      drawHUD(timeLeft);
+    }
+  } else {
+    // tetap tampilin scene terakhir di belakang overlay game-over
+    player.draw(ctx);
+    coins.forEach(c => c.draw(ctx));
+    drawHUD(0);
+    drawGameOver();
+  }
+
+  requestAnimationFrame(gameLoop);
+}
+
+resetGame();
+gameLoop();
+</script>
+</body>
+</html>

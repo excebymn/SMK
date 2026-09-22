@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Platformer Adventure - V2</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="top-bar">
+  <a href="../index.html">&larr; Back to project home</a>
+  <span style="font-size:13px; opacity:0.6;">V2 — Full Platformer</span>
+</div>
+
+<h1>PLATFORMER ADVENTURE</h1>
+<p class="instructions">
+  &larr; &rarr; move · SPACE jump · Stomp enemies from above, avoid them from the side ·
+  Hit ? blocks from below · Grab the berry to grow big · Reach the flag to finish the level
+</p>
+
+<div id="gameCanvasWrap">
+  <canvas id="gameCanvas" width="800" height="320"></canvas>
+</div>
+
+<!-- Urutan load penting: config duluan (isinya konstanta bersama),
+     terus sprites & level (gak saling butuh satu sama lain),
+     baru camera/player/enemy/powerup (butuh konstanta & fungsi
+     collision dari level.js), dan main.js paling akhir karena dia
+     yang "memanggil" semuanya. -->
+<script src="js/config.js"></script>
+<script src="js/sprites.js"></script>
+<script src="js/level.js"></script>
+<script src="js/camera.js"></script>
+<script src="js/player.js"></script>
+<script src="js/enemy.js"></script>
+<script src="js/powerup.js"></script>
+<script src="js/main.js"></script>
+
+</body>
+</html>

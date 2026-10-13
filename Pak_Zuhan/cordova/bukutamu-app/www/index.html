@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+    <title>Buku Tamu Mobile</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Supabase JS Client CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div id="app-screen" class="container">
+        <header class="header">
+            <h2>Pendaftaran Tamu</h2>
+            <p>Petugas Jaga: <span id="staff-name">Loading...</span></p>
+        </header>
+
+        <form id="guest-form">
+            <!-- Foto Tamu -->
+            <div class="photo-section">
+                <div class="photo-box" onclick="takeGuestPhoto()">
+                    <img id="photo-preview" alt="Foto Tamu">
+                </div>
+                <button type="button" class="btn-secondary" onclick="takeGuestPhoto()">📷 Ambil Foto Tamu</button>
+            </div>
+
+            <!-- Identitas Tamu -->
+            <div class="input-group">
+                <label>Nama Lengkap Tamu *</label>
+                <input type="text" id="guest-name" placeholder="Nama Tamu" required>
+            </div>
+            <div class="input-group">
+                <label>No. Telepon / WhatsApp *</label>
+                <input type="tel" id="guest-phone" placeholder="08123456789" required>
+            </div>
+            <div class="input-group">
+                <label>Instansi / Perusahaan</label>
+                <input type="text" id="guest-company" placeholder="PT / Instansi asal">
+            </div>
+
+            <!-- Dropdown dari database -->
+            <div class="input-group">
+                <label>Kategori Tamu *</label>
+                <select id="select-category" required></select>
+            </div>
+            <div class="input-group">
+                <label>Tujuan Kunjungan *</label>
+                <select id="select-purpose" required></select>
+            </div>
+            <div class="input-group">
+                <label>Lokasi / Ruangan Dituju *</label>
+                <select id="select-location" required></select>
+            </div>
+            <div class="input-group">
+                <label>Staf yang Ditemui (Host) *</label>
+                <select id="select-host" required></select>
+            </div>
+            <div class="input-group">
+                <label>Nomor Visitor Badge (Optional)</label>
+                <select id="select-badge">
+                    <option value="">-- Tanpa Badge --</option>
+                </select>
+            </div>
+
+            <!-- Barang titipan -->
+            <div class="input-group">
+                <label>Barang Titipan / Bawaan (Optional)</label>
+                <input type="text" id="item-name" placeholder="Contoh: Laptop / Tas">
+                <input type="text" id="locker-number" placeholder="Nomor Loker Titipan" style="margin-top: 5px;">
+            </div>
+
+            <div class="input-group">
+                <label>Catatan Tambahan</label>
+                <textarea id="guest-notes" rows="3" placeholder="Keterangan tambahan jika ada..."></textarea>
+            </div>
+
+            <button type="submit" id="btn-submit" class="btn-primary">PROSES CHECK-IN TAMU</button>
+        </form>
+    </div>
+
+    <script src="cordova.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+    <meta name="color-scheme" content="light">
+    <title>Pustaka dan Tamu</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Supabase JS Client via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <!-- Sprite ikon (gaya Lucide) -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+        <symbol id="i-book" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></symbol>
+        <symbol id="i-clipboard" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></symbol>
+        <symbol id="i-back" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></symbol>
+        <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></symbol>
+        <symbol id="i-camera" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></symbol>
+        <symbol id="i-repeat" viewBox="0 0 24 24"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></symbol>
+        <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+        <symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+        <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></symbol>
+        <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+        <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+    </svg>
+
+    <!-- 1. SPLASH -->
+    <section id="splash-screen" class="screen active">
+        <div class="splash-content">
+            <div class="splash-logo"><svg class="icon"><use href="#i-book"/></svg></div>
+            <h1>Pustaka dan Tamu</h1>
+            <p>Perpustakaan digital dan buku tamu dalam satu aplikasi</p>
+            <div class="spinner"></div>
+        </div>
+    </section>
+
+    <!-- 2. LOGIN -->
+    <section id="login-screen" class="screen">
+        <div class="login-hero">
+            <div class="splash-logo"><svg class="icon"><use href="#i-book"/></svg></div>
+            <h1>Selamat Datang</h1>
+            <p>Masuk untuk melanjutkan</p>
+        </div>
+        <form id="login-form" class="login-card">
+            <div class="field">
+                <label for="login-email">Email</label>
+                <input type="email" id="login-email" placeholder="email@contoh.com" autocomplete="username" required>
+            </div>
+            <div class="field">
+                <label for="login-password">Password</label>
+                <div class="pw-wrap">
+                    <input type="password" id="login-password" placeholder="Password" autocomplete="current-password" required>
+                    <button type="button" id="toggle-pw" class="pw-toggle">Lihat</button>
+                </div>
+            </div>
+            <button type="submit" id="btn-login" class="btn btn-primary">Masuk</button>
+        </form>
+    </section>
+
+    <!-- 3. HUB: PILIH LAYANAN -->
+    <section id="hub-screen" class="screen">
+        <header class="hub-header">
+            <div class="hub-user">
+                <div class="avatar" id="hub-avatar">?</div>
+                <div>
+                    <p class="greet" id="hub-greet">Selamat datang,</p>
+                    <h2 id="hub-name">-</h2>
+                    <span class="chip light" id="hub-role">-</span>
+                </div>
+            </div>
+            <button class="icon-btn light" id="btn-logout" aria-label="Keluar"><svg class="icon"><use href="#i-logout"/></svg></button>
+        </header>
+
+        <main class="hub-body">
+            <button class="module-card lib" data-go="lib-screen">
+                <div class="module-icon"><svg class="icon"><use href="#i-book"/></svg></div>
+                <div class="module-text">
+                    <h3>Perpustakaan</h3>
+                    <p>Kartu anggota digital, katalog, dan peminjaman buku</p>
+                </div>
+                <svg class="icon chev"><use href="#i-chevron"/></svg>
+            </button>
+
+            <button class="module-card guest" data-go="guest-screen">
+                <div class="module-icon"><svg class="icon"><use href="#i-clipboard"/></svg></div>
+                <div class="module-text">
+                    <h3>Buku Tamu</h3>
+                    <p>Check-in tamu, foto, visitor badge, dan barang titipan</p>
+                </div>
+                <svg class="icon chev"><use href="#i-chevron"/></svg>
+            </button>
+        </main>
+    </section>
+
+    <!-- 4. PERPUSTAKAAN -->
+    <section id="lib-screen" class="screen">
+        <header class="appbar">
+            <button class="icon-btn" data-back aria-label="Kembali"><svg class="icon"><use href="#i-back"/></svg></button>
+            <h2>Perpustakaan</h2>
+            <span class="appbar-spacer"></span>
+        </header>
+
+        <main class="page">
+            <div class="member-card">
+                <div class="member-top">
+                    <div class="avatar big" id="lib-avatar">?</div>
+                    <div>
+                        <p class="card-label">KARTU ANGGOTA DIGITAL</p>
+                        <h3 id="card-user-name">-</h3>
+                        <p class="card-id" id="card-user-id">ID: -</p>
+                    </div>
+                </div>
+                <div class="member-bottom">
+                    <span class="chip light" id="lib-role">-</span>
+                    <span class="card-brand">Pustaka</span>
+                </div>
+            </div>
+
+            <p class="section-label">Menu Utama</p>
+            <div class="menu-grid">
+                <button class="menu-item" id="btn-update-photo">
+                    <span class="menu-icon c1"><svg class="icon"><use href="#i-camera"/></svg></span>
+                    <span>Update Foto</span>
+                </button>
+                <button class="menu-item" data-soon="Katalog Buku">
+                    <span class="menu-icon c2"><svg class="icon"><use href="#i-search"/></svg></span>
+                    <span>Katalog Buku</span>
+                </button>
+                <button class="menu-item" data-soon="Peminjaman">
+                    <span class="menu-icon c3"><svg class="icon"><use href="#i-repeat"/></svg></span>
+                    <span>Peminjaman</span>
+                </button>
+                <button class="menu-item" data-soon="Riwayat">
+                    <span class="menu-icon c4"><svg class="icon"><use href="#i-clock"/></svg></span>
+                    <span>Riwayat</span>
+                </button>
+                <button class="menu-item" data-soon="Profil Saya">
+                    <span class="menu-icon c5"><svg class="icon"><use href="#i-user"/></svg></span>
+                    <span>Profil Saya</span>
+                </button>
+                <button class="menu-item" data-soon="Info Pustaka">
+                    <span class="menu-icon c6"><svg class="icon"><use href="#i-info"/></svg></span>
+                    <span>Info Pustaka</span>
+                </button>
+            </div>
+        </main>
+    </section>
+
+    <!-- 5. BUKU TAMU -->
+    <section id="guest-screen" class="screen">
+        <header class="appbar">
+            <button class="icon-btn" data-back aria-label="Kembali"><svg class="icon"><use href="#i-back"/></svg></button>
+            <h2>Buku Tamu</h2>
+            <span class="appbar-spacer"></span>
+        </header>
+
+        <form id="guest-form" class="page with-footer">
+            <p class="staff-line">Petugas jaga: <strong id="staff-name">-</strong></p>
+
+            <div class="card photo-card">
+                <button type="button" class="photo-box" id="photo-box" aria-label="Ambil foto tamu">
+                    <img id="photo-preview" alt="Foto tamu">
+                    <span class="photo-empty">
+                        <svg class="icon"><use href="#i-camera"/></svg>
+                        <small>Ketuk untuk foto</small>
+                    </span>
+                </button>
+                <button type="button" class="btn btn-ghost" id="btn-take-photo">Ambil Foto Tamu</button>
+            </div>
+
+            <div class="card">
+                <h4>Identitas Tamu</h4>
+                <div class="field">
+                    <label for="guest-name">Nama Lengkap *</label>
+                    <input type="text" id="guest-name" placeholder="Nama tamu" required>
+                </div>
+                <div class="field">
+                    <label for="guest-phone">No. Telepon / WhatsApp *</label>
+                    <input type="tel" id="guest-phone" placeholder="08123456789" required>
+                </div>
+                <div class="field">
+                    <label for="guest-company">Instansi / Perusahaan</label>
+                    <input type="text" id="guest-company" placeholder="PT / instansi asal">
+                </div>
+            </div>
+
+            <div class="card">
+                <h4>Kunjungan</h4>
+                <div class="field">
+                    <label for="select-category">Kategori Tamu *</label>
+                    <select id="select-category" required></select>
+                </div>
+                <div class="field">
+                    <label for="select-purpose">Tujuan Kunjungan *</label>
+                    <select id="select-purpose" required></select>
+                </div>
+                <div class="field">
+                    <label for="select-location">Lokasi / Ruangan Dituju *</label>
+                    <select id="select-location" required></select>
+                </div>
+                <div class="field">
+                    <label for="select-host">Staf yang Ditemui *</label>
+                    <select id="select-host" required></select>
+                </div>
+                <div class="field">
+                    <label for="select-badge">Visitor Badge (opsional)</label>
+                    <select id="select-badge"></select>
+                </div>
+            </div>
+
+            <div class="card">
+                <h4>Barang Titipan (opsional)</h4>
+                <div class="field">
+                    <label for="item-name">Nama Barang</label>
+                    <input type="text" id="item-name" placeholder="Contoh: Laptop / Tas">
+                </div>
+                <div class="field">
+                    <label for="locker-number">Nomor Loker</label>
+                    <input type="text" id="locker-number" placeholder="Contoh: L-07">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="field">
+                    <label for="guest-notes">Catatan Tambahan</label>
+                    <textarea id="guest-notes" rows="3" placeholder="Keterangan tambahan jika ada..."></textarea>
+                </div>
+            </div>
+
+            <div class="submit-bar">
+                <button type="submit" id="btn-submit" class="btn btn-primary">Proses Check-in Tamu</button>
+            </div>
+        </form>
+    </section>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <script src="cordova.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

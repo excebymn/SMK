@@ -2,53 +2,67 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ProdukCollection;
+use App\Http\Resources\ProdukResource;
+use App\Models\Produk;
 use Illuminate\Http\Request;
 
 class ProdukController extends Controller
 {
-    protected array $produk = [
-        ['id' => 1, 'nama' => 'Laptop', 'harga' => 8500000],
-        ['id' => 2, 'nama' => 'Mouse', 'harga' => 200000],
-        ['id' => 3, 'nama' => 'Keyboard', 'harga' => 300000],
-    ];
-
+    /**
+     * Display a paginated listing of the resource.
+     */
     public function index()
     {
-        return response()->json([
-            'message' => 'Daftar Produk',
-            'data' => $this->produk
-        ]);
+        $produk = Produk::paginate(10);
+
+        return new ProdukCollection($produk);
     }
 
-    public function show($id) //cari dan tampilkan produk
+    /**
+     * Display the specified resource.
+     */
+    public function show($id)
     {
-        $item = collect($this->produk)
-            ->firstWhere('id', (int) $id);
+        $produk = Produk::find($id);
 
-        if (!$item) {
-            return response()->json([
-                'message' => 'Produk Tidak Ditemukan'
-            ], 404);
+        if (!$produk) {
+            return response()->json(['message' => 'Product not found'], 404);
         }
 
-        return response()->json([
-            'message' => 'Detail Produk Berhasil Diambil',
-            'data' => $item 
-        ]);
+        return new ProdukResource($produk);
     }
-    public function store(Request $request){ //validasi dan simpan produk
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        // TODO: validate and save the product (meeting 7)
         return response()->json([
-            'message' => 'roduk berhasil ditambahkan'
-        ]);
+            'message' => 'Product created successfully',
+        ], 201);
     }
-    public function update(Request $request, $id){ //validasi dan update produk
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, $id)
+    {
+        // TODO: validate and update the product (meeting 8)
         return response()->json([
-            'message' => "Produk {$id} berhasil diupdate"
+            'message' => "Product {$id} updated successfully",
         ], 200);
-    } 
-    public function destroy($id){ //hapus produk berdasarkan id
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy($id)
+    {
+        // TODO: delete the product (meeting 8)
         return response()->json([
-            'message' => "Produk {$id} berhasil dihapus"
+            'message' => "Product {$id} deleted successfully",
         ], 200);
     }
 }

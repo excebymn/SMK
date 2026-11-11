@@ -1,0 +1,130 @@
+d{
+  "info": {
+    "_postman_id": "edaf9c8e-d6ed-4ec0-a668-2c6b1d11d03c",
+    "name": "Produk API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "59447492",
+    "_collection_link": "https://go.postman.co/collection/59447492-edaf9c8e-d6ed-4ec0-a668-2c6b1d11d03c?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "New Request",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/produk",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "produk"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "New Request",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/produk/1",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "produk",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "New Request",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": []
+        },
+        "url": {
+          "raw": "{{base_url}}/produk",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "produk"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "New Request",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n\"nama\": \"Mouse Wireless Updated\",\n\"harga\": 135000,\n\"stok\": 25\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/produk/1",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "produk",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "New Request",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/produk/1",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "produk",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
